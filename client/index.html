@@ -1,0 +1,159 @@
+<!DOCTYPE html>
+<html>
+
+  <head>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/materialize/0.98.1/css/materialize.min.css">
+    <link rel="stylesheet" href="style.css">
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.12.4/jquery.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/materialize/0.98.1/js/materialize.min.js"></script>
+    <script src="https://unpkg.com/vue"></script>
+    <script src="https://unpkg.com/axios/dist/axios.min.js"></script>
+    <meta charset="utf-8">
+    <title></title>
+  </head>
+
+    <body>
+
+      <div id="app">
+        <top-nav-bar></top-nav-bar>
+        <div class="container">
+          <div class="row">
+            <data-blog :blogcontent="onepost"></data-blog>
+            <side-nav-bar :listcontent="blogcontent" @pilihpost="gantipost"></side-nav-bar>
+          </div>
+        </div>
+
+        <!-- <side-nav-bar :listcontent="blogcontent" @pilihpost="gantipost"></side-nav-bar> -->
+        <my-footer></my-footer>
+      </div>
+    </body>
+
+
+
+  <script>
+
+    Vue.component('top-nav-bar', {
+      template : `
+        <nav>
+        <div class="nav-wrapper">
+            <a href="#" class="brand-logo">Blog</a>
+            <ul id="nav-mobile" class="right hide-on-med-and-down">
+              <li><a href="sass.html">A</a></li>
+              <li><a href="badges.html">B</a></li>
+              <li><a href="collapsible.html">C</a></li>
+            </ul>
+          </div>
+        </nav>
+      `
+    })
+
+    Vue.component('side-nav-bar', {
+      props: ['listcontent'],
+      template : `
+        <div id="sidebar" class="collection col s12 m5 l4">
+          <div v-for="post in listcontent">
+            <a href="#!" :id="post.slug" class="collection-item" @click="pilih(post)" >{{post.title}}</a>
+          </div>
+        </div>
+      `,
+      methods: {
+        pilih: function(post) {
+          this.$emit('pilihpost', post)
+        }
+      }
+    })
+
+
+    Vue.component('data-blog', {
+      props: ['blogcontent'],
+      template: `
+            <div class="col s12 m7 l8">
+              <div class="card">
+                <div class="card-image">
+                  <img :src="blogcontent.image" width="5%" height="5%"/>
+                </div>
+                <span id="blog-title" class="card-title" :title="blogcontent.slug">{{blogcontent.title}}</span>
+                <div class="card-content">
+                  <p>{{blogcontent.content}}</p>
+                </div>
+                <div class="card-action">
+                  <a href="#">This is a link</a>
+                </div>
+              </div>
+            </div>
+      `
+    })
+
+    Vue.component('my-footer', {
+      template: `
+        <div class="page-footer">
+          <div class="container">
+            <div class="row">
+              <div class="col l6 s12">
+                <h5 class="white-text">Footer Content</h5>
+                <p class="grey-text text-lighten-4">You can use rows and columns here to organize your footer content.</p>
+              </div>
+              <div class="col l4 offset-l2 s12">
+                <h5 class="white-text">Connect</h5>
+                <ul>
+                  <img src="/Assets/145797-social-network-logo-collection/png/facebook.png" style="width: 40px">
+                  <img src="/Assets/145797-social-network-logo-collection/png/twitter.png" style="width: 40px" hspace="20">
+                  <img src="/Assets/145797-social-network-logo-collection/png/google-plus.png" style="width: 40px"><br><br>
+                  <img src="/Assets/145797-social-network-logo-collection/png/pinterest.png" style="width: 40px">
+                  <img src="/Assets/145797-social-network-logo-collection/png/instagram.png" style="width: 40px" hspace="20">
+                  <img src="/Assets/145797-social-network-logo-collection/png/tumblr.png" style="width: 40px"><br><br>
+                </ul>
+              </div>
+            </div>
+          </div>
+          <div class="footer-copyright">
+            <div class="container">
+            © 2017 Copyright Text
+            <a class="grey-text text-lighten-4 right" href="#!">More Links</a>
+            </div>
+          </div>
+        </div>
+      `
+    })
+
+
+
+    var app = new Vue ({
+      el: '#app',
+      data: {
+        blogcontent: [],
+        onepost: {}
+      },
+      methods: {
+        getAll: function() {
+          axios.get('http://localhost:3000/api/article')
+          .then(function(res) {
+            app.blogcontent = res.data
+            app.onepost = res.data[0]
+            console.log(app.onepost);
+          })
+          .catch(function(err) {
+            console.log(err.message);
+          })
+        },
+        gantipost: function(post) {
+          this.onepost = post
+          console.log(this.onepost);
+        }
+      },
+      mounted: function() {
+        this.getAll()
+      }
+    })
+
+
+    $('.button-collapse').sideNav({
+      menuWidth: 300, // Default is 240
+      closeOnClick: true // Closes side-nav on <a> clicks, useful for Angular/Meteor
+    }
+  );
+  $('.collapsible').collapsible();
+
+  </script>
+
+</html>
