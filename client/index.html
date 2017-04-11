@@ -50,7 +50,7 @@
     Vue.component('side-nav-bar', {
       props: ['listcontent'],
       template : `
-        <div id="sidebar" class="collection col s12 m5 l4">
+        <div class="collection col s12 m5 l4">
           <div v-for="post in listcontent">
             <a href="#!" :id="post.slug" class="collection-item" @click="pilih(post)" >{{post.title}}</a>
           </div>
